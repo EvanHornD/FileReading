@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import Exceptions.InvalidFileTypeException;
+import Exceptions.InvalidParameterException;
+
 class ConfigManager {
 
 	private String configFilePath;
@@ -33,10 +36,6 @@ class ConfigManager {
 		try {
 			BufferedReader configReader = new BufferedReader(new FileReader(configFilePath));
 			indexFile(configReader);
-            if(!checkIfIsConfig()) {
-                indexMap = null;
-                configs = null;
-            }
             try {
                 configReader.close();
             } catch (Exception e) {
@@ -59,7 +58,12 @@ class ConfigManager {
 			if(lineNumber%2==0) {
 				name = line.strip();
 			} else {
-                Config newConfig = new Config(name, line);
+                Config newConfig;
+                try {
+                    newConfig = new Config(line, name);
+                } catch (InvalidFileTypeException | InvalidParameterException e) {
+                    continue;
+                }
                 configs.add(newConfig);
                 indexMap.put(name, configs.size()-1);
             }
@@ -85,17 +89,10 @@ class ConfigManager {
 			e.printStackTrace();
 		}
 	}
-
-    private boolean checkIfIsConfig(){
-        for (Config config : configs) {
-            if(!config.isConfig()) return false;
-        }
-        return true;
-    }
     //#endregion
 
     //#region  changing config file
-    public void changeConfig(String fileName, String[] headerNames){
+    public void changeConfig(String fileName, String[] headerNames) throws InvalidFileTypeException, InvalidParameterException{
 
         String configString = "";
         for (int i = 0; i < headerNames.length; i++) {
@@ -111,13 +108,7 @@ class ConfigManager {
         try {
             BufferedWriter fileWriter = new BufferedWriter(new FileWriter(configFilePath));
             if (!indexMap.containsKey(fileName)){
-
-                if (configChange.isConfig()) {
-                    fileWriter.write(addConfig(configChange));
-                } else {
-                    System.out.println("Invalid Config " + configChange.configFilePath + ": " + configChange.configuration);
-                }
-
+                fileWriter.write(addConfig(configChange));
             }else{
                 fileWriter.write(replaceConfig(fileName, configChange));
             }
