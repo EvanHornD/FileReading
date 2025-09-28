@@ -1,10 +1,2 @@
-name.txt
-abc
-wtf.txt
-lol
-test.txt
-1,2
-csv.txt
-2,7,8
-resources\DataSets\TLETest.txt
+resources\\DataSets\\TLETest.txt
 NAME,TLELINE1,TLELINE2

@@ -11,11 +11,10 @@ public class Config {
         this.configuration = configuration;
 
         if(!(filePath.endsWith(".txt") || filePath.endsWith(".csv"))){
-            int index = filePath.split(".").length -1;
-            String fileType = filePath.split(".")[index];
+            int index = filePath.split("\\.").length -1;
+            String fileType = filePath.split("\\.")[index];
             throw new InvalidFileTypeException("DataSets can only be of FileType: .txt, and .csv The filetype:" + fileType + " is an invalid filetype");
         }
-
 
         String[] headers = configuration.split(",");
         for (int i = 0; i < headers.length; i++) {

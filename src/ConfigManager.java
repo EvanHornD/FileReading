@@ -33,6 +33,7 @@ class ConfigManager {
 
     //#region initialization
 	public void initConfig() {
+        
 		try {
 			BufferedReader configReader = new BufferedReader(new FileReader(configFilePath));
 			indexFile(configReader);
@@ -49,27 +50,24 @@ class ConfigManager {
 	}
 
 	private void indexFile(BufferedReader fileReader) {
-        int lineNumber = 0;
+        boolean invalidConfigFile = false;
         String line;
-		String name = "";
+        String line2;
         indexMap = new HashMap<>();
         configs = new ArrayList<>();
-		while((line = readLine(fileReader)) != null){
-			if(lineNumber%2==0) {
-				name = line.strip();
-			} else {
-                Config newConfig;
-                try {
-                    newConfig = new Config(line, name);
-                } catch (InvalidFileTypeException | InvalidParameterException e) {
-                    continue;
-                }
+		while((line = readLine(fileReader)) != null && (line2 = readLine(fileReader)) != null){
+            try {
+                Config newConfig = new Config(line.strip(), line2.strip());
                 configs.add(newConfig);
-                indexMap.put(name, configs.size()-1);
+                indexMap.put(line, configs.size()-1);
+            } catch (InvalidFileTypeException | InvalidParameterException e) {
+                invalidConfigFile = true;
+                System.out.println("Invalid Config:" + line);
+                e.printStackTrace();
+                continue;
             }
-			lineNumber++;
 		}
-        return;
+        if (invalidConfigFile) updateFile();
 	}
 
     private String readLine(BufferedReader fileReader){
@@ -89,6 +87,20 @@ class ConfigManager {
 			e.printStackTrace();
 		}
 	}
+
+    private void updateFile(){
+        String fileString = "";
+        for (Config config : configs) {
+            fileString+=config.toString()+"\n";
+        }
+        try {
+            BufferedWriter fileWriter = new BufferedWriter(new FileWriter(configFilePath));
+            fileWriter.write(fileString);
+            fileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     //#endregion
 
     //#region  changing config file
