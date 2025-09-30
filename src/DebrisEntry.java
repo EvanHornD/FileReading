@@ -48,6 +48,5 @@ class DebrisEntry {
         DRAGCOEFFICIENT+", \n"+
         AREA+", \n"+
         MASS;
-        
     }
 }
