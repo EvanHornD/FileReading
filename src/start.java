@@ -1,4 +1,3 @@
-import java.util.Arrays;
 
 import Exceptions.InvalidFileTypeException;
 import Exceptions.InvalidParameterException;
